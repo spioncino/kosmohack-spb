@@ -1,0 +1,22 @@
+# Текстовые файлы хранятся в репозитории и выдаются при checkout с концами строк LF на любой ОС: хеш конфигов в
+# algorithm_version (src/evarisk/version.py) один и тот же для одного коммита.
+* text=auto eol=lf
+
+# Сырые ответы источников в фикстурах хранятся байт в байт (D3): концы строк в них не преобразуются.
+tests/fixtures/** -text
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.nc binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.wav binary
+*.mp3 binary

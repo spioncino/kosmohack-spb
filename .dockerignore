@@ -1,0 +1,25 @@
+# В контекст сборки попадают только код, конфиги, статика web, исходники frontend, файлы зависимостей и документы
+# docs/*.md с README.md и CONTRIBUTING.md для раздела «Документация» страницы.
+# Зависимости и сборка фронтенда ставятся и собираются в стадиях frontend-deps и frontend, с хоста не берутся.
+data
+.venv
+.git
+tests
+docs/examples
+docs/experiments
+docs/presentation
+docs/task
+docs/research
+docs/design
+deploy
+.env
+.env.*
+__pycache__
+*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+Makefile
+frontend/node_modules
+frontend/dist
+frontend/.vite

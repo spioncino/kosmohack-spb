@@ -1,0 +1,33 @@
+{
+  "name": "evarisk-frontend",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 4173",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview --port 4173",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "lucide-vue-next": "^0.468.0",
+    "marked": "^18.0.13",
+    "satellite.js": "^6.0.1",
+    "three": "^0.180.0",
+    "topojson-client": "^3.1.0",
+    "vue": "^3.5.0",
+    "vue-router": "^4.5.0",
+    "world-atlas": "^2.0.2"
+  },
+  "devDependencies": {
+    "vite": "^7.1.0",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "typescript": "^5.9.0",
+    "vue-tsc": "^3.0.0",
+    "vitest": "^3.2.0",
+    "@types/three": "^0.180.0",
+    "@types/topojson-client": "^3.1.5",
+    "@types/geojson": "^7946.0.16",
+    "@types/node": "^24.0.0"
+  }
+}

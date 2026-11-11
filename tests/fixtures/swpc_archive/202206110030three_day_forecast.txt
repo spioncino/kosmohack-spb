@@ -1,0 +1,54 @@
+Product: 3-Day Forecast
+Issued: 2022 Jun 11 0030 UTC
+Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction
+Center
+
+A. NOAA Geomagnetic Activity Observation and Forecast
+
+The greatest observed 3 hr Kp over the past 24 hours was 2 (below NOAA
+Scale levels).
+The greatest expected 3 hr Kp for Jun 11-Jun 13 2022 is 2 (below NOAA
+Scale levels).
+
+NOAA Kp index breakdown Jun 11-Jun 13 2022
+
+            Jun 11     Jun 12     Jun 13
+00-03UT        2          2          2     
+03-06UT        2          1          1     
+06-09UT        1          1          1     
+09-12UT        1          1          1     
+12-15UT        1          1          2     
+15-18UT        1          1          1     
+18-21UT        1          2          2     
+21-00UT        2          2          1     
+
+Rationale: No G1 (Minor) or greater geomagnetic storms are expected.  No
+significant transient or recurrent solar wind features are forecast.
+
+B. NOAA Solar Radiation Activity Observation and Forecast
+
+Solar radiation, as observed by NOAA GOES-16 over the past 24 hours, was
+below S-scale storm level thresholds.
+
+Solar Radiation Storm Forecast for Jun 11-Jun 13 2022
+
+              Jun 11  Jun 12  Jun 13
+S1 or greater    1%      1%      1%
+
+Rationale: No S1 (Minor) or greater solar radiation storms are expected.
+No significant active region activity favorable for radiation storm
+production is forecast.
+
+C. NOAA Radio Blackout Activity and Forecast
+
+Radio blackouts reaching the R1 levels were observed over the past 24
+hours. The largest was at Jun 10 2022 1054 UTC.
+
+Radio Blackout Forecast for Jun 11-Jun 13 2022
+
+              Jun 11        Jun 12        Jun 13
+R1-R2           10%           10%           10%
+R3 or greater    1%            1%            1%
+
+Rationale: There is a slight chance for an R1-R2 (Minor-Moderate) radio
+blackout on 11-13 Jun.

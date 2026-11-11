@@ -1,0 +1,6 @@
+# Порог модуля поля для разметки Южно-Атлантической аномалии на высоте МКС, нТл (D31): контур Heirtzler для 400 км,
+# источник ниже; человеком по первоисточнику не сверен. Без поля in_saa заполнялся бы False с ограничением в ответе.
+saa_b_threshold_nt = 24000.0
+
+[sources]
+saa = "Heirtzler J.R., The Future of the South Atlantic Anomaly and Implications for Radiation Damage in Space, NASA/GSFC, NTRS 20000085550 (JASTP 64, 1701–1708, 2002): контур 24 000 нТл на высоте 400 км соответствует области максимума дозы по данным станции Мир; https://ntrs.nasa.gov/api/citations/20000085550/downloads/20000085550.pdf"

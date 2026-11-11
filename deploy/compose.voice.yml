@@ -1,0 +1,8 @@
+# Адрес службы синтеза речи для api при запуске с профилем voice (make up-voice).
+# Отдельный файл, потому что переменная окружения в compose.yml относится к сервису целиком, а не к профилю:
+# при запуске без профиля voice api обращался бы к несуществующему хосту tts.
+# Запуск: docker compose --env-file .env -f deploy/compose.yml -f deploy/compose.voice.yml --profile voice up -d --build
+services:
+  api:
+    environment:
+      EVARISK_TTS_URL: http://tts:8010

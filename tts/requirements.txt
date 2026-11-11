@@ -1,0 +1,6 @@
+# Сервис синтеза речи: отдельное окружение, чтобы torch не попадал в основной образ evarisk.
+# torch ставится из индекса CPU: --index-url https://download.pytorch.org/whl/cpu
+torch
+numpy
+fastapi
+uvicorn[standard]

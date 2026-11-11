@@ -1,0 +1,11 @@
+# secrets
+.env
+.env.*
+!.env.example
+# fetched data (Space-Track user agreement forbids redistribution; NASA/NOAA caches are large)
+data/
+# python
+__pycache__/
+*.pyc
+.venv/
+MISIS-GO.zip

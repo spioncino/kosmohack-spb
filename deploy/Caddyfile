@@ -1,0 +1,20 @@
+# Общая часть: все пути уходят на api:8000. Сборку фронтенда («/») и старую страницу («/dev») раздаёт сам api
+# из образа (src/evarisk/api/app.py, Settings.frontend_dist), поэтому статики в Caddy нет.
+(evarisk) {
+	encode gzip
+	reverse_proxy api:8000
+}
+
+# Локальный запуск: HTTP на порту 80 без TLS.
+http://localhost {
+	import evarisk
+}
+
+# DOMAIN приходит из .env через compose. Для настоящего домена Caddy получает сертификат Let's Encrypt
+# и перенаправляет HTTP на HTTPS. При DOMAIN=localhost блок отвечает на https://localhost сертификатом
+# внутреннего CA, а HTTP обслуживает блок выше. Адрес со схемой http:// (DOMAIN=http://<IP сервера>)
+# обслуживается только по HTTP, без сертификата; адреса перечисляются через запятую
+# (DOMAIN=<домен>, http://<IP сервера>), см. docs/DEPLOY.md.
+{$DOMAIN} {
+	import evarisk
+}

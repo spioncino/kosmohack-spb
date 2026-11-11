@@ -1,0 +1,55 @@
+[project]
+name = "evarisk"
+version = "0.1.0"
+description = "Оценка внешних рисков ВКД на МКС"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "httpx>=0.27",
+  "pydantic>=2.8",
+  "pydantic-settings>=2.4",
+  "numpy>=2.0",
+  "netCDF4>=1.7",
+  "skyfield>=1.49",
+  "sgp4>=2.23",
+  "aacgmv2>=2.6",
+  "ppigrf>=2.0",
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "python-multipart",
+  "sqlalchemy>=2.0",
+  "psycopg[binary]>=3.2",
+  "evolution-openai>=1.0.4",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.3", "respx>=0.21", "ruff>=0.6", "mypy>=1.11", "httpx>=0.27"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/evarisk"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "W", "DTZ", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003", "B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["DTZ"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "scripts"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = ["e2e: сквозные тесты через API"]

@@ -1,0 +1,101 @@
+# Базовый набор сервисов для локального запуска и VPS. Пути в файле относительны каталогу deploy/.
+# Запуск из корня проекта: docker compose --env-file .env -f deploy/compose.yml up -d --build (цель make up).
+# DATA_DIR задаёт каталог данных на хосте, по умолчанию ../data, то есть data/ в корне проекта; в контейнерах это /data.
+# Порт api наружу не публикуется: доступ только через caddy, который проксирует все пути на api:8000;
+# сборку фронтенда (/) и старую страницу (/dev) раздаёт сам api из образа.
+name: evarisk
+
+x-app: &app
+  build:
+    context: ..
+    args:
+      GIT_SHA: ${GIT_SHA:-nogit}
+  image: evarisk
+  env_file: ../.env
+  environment:
+    EVARISK_RAW_ROOT: /data/raw
+    EVARISK_ASSESSMENTS_ROOT: /data/assessments
+    EVARISK_MIRROR_ROOT: /data/mirror
+    EVARISK_DATABASE_URL: postgresql+psycopg://evarisk:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD не задан в .env}@db:5432/evarisk
+  volumes:
+    - ${DATA_DIR:-../data}:/data
+  restart: unless-stopped
+  depends_on:
+    db:
+      condition: service_healthy
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: evarisk
+      POSTGRES_DB: evarisk
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD не задан в .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U evarisk -d evarisk"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  api:
+    <<: *app
+    healthcheck:
+      # В образе нет curl, проверка через стандартную библиотеку Python.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  worker:
+    <<: *app
+    command: ["python", "-m", "evarisk.worker"]
+
+  # Необязательный сервис синтеза речи для озвучки сводки экипажу (D58): поднимается только с профилем voice
+  # (make up-voice). Модель 40 МБ лежит в томе данных и загружается при первом старте. Без сервиса и без
+  # EVARISK_TTS_URL в .env сводка отдаётся текстом, озвучка остаётся на стороне браузера.
+  # Адрес службы для api задаёт compose.voice.yml (EVARISK_TTS_URL: http://tts:8010), его подключает make up-voice:
+  # переменная окружения в compose.yml относится к сервису целиком, а не к профилю, и при запуске без профиля voice
+  # api обращался бы к несуществующему хосту tts.
+  tts:
+    profiles: ["voice"]
+    restart: unless-stopped
+    build:
+      context: ..
+      dockerfile: tts/Dockerfile
+    image: evarisk-tts
+    environment:
+      TTS_MODEL_PATH: /data/tts/v4_ru.pt
+    volumes:
+      - ${DATA_DIR:-../data}:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8010/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_started
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

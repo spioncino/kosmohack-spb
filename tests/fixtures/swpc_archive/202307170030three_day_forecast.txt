@@ -1,0 +1,62 @@
+Product: 3-Day Forecast
+Issued: 2023 Jul 17 0030 UTC
+Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction
+Center
+
+A. NOAA Geomagnetic Activity Observation and Forecast
+
+The greatest observed 3 hr Kp over the past 24 hours was 5 (NOAA Scale
+G1).
+The greatest expected 3 hr Kp for Jul 17-Jul 19 2023 is 4.67 (NOAA Scale
+G1).
+
+NOAA Kp index breakdown Jul 17-Jul 19 2023
+
+             Jul 17       Jul 18       Jul 19
+00-03UT       2.67         4.67 (G1)    2.00     
+03-06UT       2.67         4.67 (G1)    1.67     
+06-09UT       2.00         4.67 (G1)    2.67     
+09-12UT       2.00         4.33         2.67     
+12-15UT       2.67         4.00         2.33     
+15-18UT       3.67         3.00         3.00     
+18-21UT       4.33         2.00         3.67     
+21-00UT       4.67 (G1)    2.33         2.67     
+
+Rationale: Continuing CME influences are expected to result in unsettled
+to G1 (Minor) levels on 17-18 Jul with a chance for G2 (Moderate).
+
+B. NOAA Solar Radiation Activity Observation and Forecast
+
+Solar radiation, as observed by NOAA GOES-16 over the past 24 hours, was
+above S-scale storm level thresholds.
+
+Solar Radiation Storm Forecast for Jul 17-Jul 19 2023
+
+              Jul 17  Jul 18  Jul 19
+S1 or greater   25%     20%     10%
+
+Rationale: The greater than 10 MeV proton flux is expected to remain
+mildly enhanced, with a chance of S1 levels on 17 Jul due primarily to
+the recent activity escalation in Region 3363 and its favorable
+location. Proton flux is expected to continue at background on 18-19
+Jul, with a slight chance of a S1 storm as Region 3363 begins to rotate
+to and beyond the west limb.
+
+C. NOAA Radio Blackout Activity and Forecast
+
+Radio blackouts reaching the R1 levels were observed over the past 24
+hours. The largest was at Jul 16 2023 1746 UTC.
+
+Radio Blackout Forecast for Jul 17-Jul 19 2023
+
+              Jul 17        Jul 18        Jul 19
+R1-R2           60%           60%           50%
+R3 or greater   25%           25%           15%
+
+Rationale: The combined flare probabilities of mainly Regions 3363,
+3372, and 3373 have led to a forecast of solar activity likely being
+moderate - with C-class X-ray flux expected to continue as background
+levels and a likelihood of M-class flares (R1-R2; Minor-Moderate) with a
+chance of an X-class (R3; Strong) event on 17-18 Jul. Solar activity is
+expected to be low, with a chance of M-class flares and slight chance of
+X-class flares on 19 Jul.

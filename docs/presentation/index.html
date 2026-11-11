@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evarisk: окно ВКД на МКС</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0d0f;--surface:#151719;--surface2:#1b1e21;--border:#292d30;--text:#f1f3f4;--muted:#9299a2;
+  --blue:#79b8f0;--teal:#5bd3bb;--yellow:#e8bd70;--red:#e87470;--violet:#b49cf0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#050607;color:var(--text);font-family:Inter,-apple-system,'Segoe UI',sans-serif}
+.deck{display:flex;flex-direction:column;align-items:center;gap:28px;padding:28px 0}
+.slide{width:1600px;height:900px;background:var(--bg);position:relative;overflow:hidden;padding:72px 88px 64px;
+  display:flex;flex-direction:column;border:1px solid var(--border);border-radius:18px;transform-origin:top center}
+.slide h1{font-size:54px;line-height:1.1;font-weight:750;letter-spacing:-.02em;margin:0 0 18px}
+.slide h2{font-size:44px;line-height:1.12;font-weight:720;letter-spacing:-.015em;margin:0 0 30px;max-width:1300px}
+.slide h3{font-size:24px;font-weight:650;margin:0 0 12px}
+.slide p,.slide li{font-size:24px;line-height:1.45;color:#d7dbde;margin:0}
+.slide ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:14px}
+.slide li{padding-left:28px;position:relative}
+.slide li::before{content:"";position:absolute;left:4px;top:15px;width:9px;height:9px;border-radius:50%;background:var(--teal)}
+.muted{color:var(--muted)!important}
+.kicker{font-size:18px;font-weight:650;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:18px}
+.foot{position:absolute;left:88px;right:88px;bottom:30px;display:flex;justify-content:space-between;font-size:15px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:44px;flex:1;min-height:0}
+.cols.wide-left{grid-template-columns:1.25fr 1fr}
+.cols.wide-right{grid-template-columns:1fr 1.35fr}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px 28px}
+.card p,.card li{font-size:21px}
+.big{font-size:84px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.num-row{display:flex;gap:22px}
+.num{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 24px}
+.num strong{display:block;font-size:52px;font-weight:780;letter-spacing:-.02em;line-height:1.05}
+.num span{display:block;font-size:18px;color:var(--muted);margin-top:8px;line-height:1.35}
+.teal{color:var(--teal)!important}.red{color:var(--red)!important}.yellow{color:var(--yellow)!important}.blue{color:var(--blue)!important}
+.shot{border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surface);display:flex;align-items:flex-start;justify-content:center}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.shot.contain img{object-fit:contain;object-position:center}
+.caption{font-size:16px;color:var(--muted);margin-top:10px;line-height:1.4}
+table.t{width:100%;border-collapse:collapse;font-size:21px}
+table.t th{text-align:left;font-weight:600;color:var(--muted);font-size:17px;padding:12px 14px;border-bottom:1px solid var(--border)}
+table.t td{padding:14px;border-bottom:1px solid var(--border);vertical-align:top}
+table.t tr.ours td{background:#11231f}
+table.t td.n{font-variant-numeric:tabular-nums;font-weight:650}
+.pill{display:inline-block;font-size:15px;font-weight:650;padding:4px 10px;border-radius:999px;border:1px solid var(--border);color:var(--muted);margin-right:6px}
+.pill.obs{color:var(--blue);border-color:#2c4a63}.pill.ext{color:var(--yellow);border-color:#5b4a2c}.pill.calc{color:var(--teal);border-color:#23554b}
+.flow{display:flex;align-items:stretch;gap:14px;margin-top:6px}
+.flow .step{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 18px;font-size:19px;line-height:1.35;color:#d7dbde}
+.flow .step b{display:block;color:var(--text);font-size:20px;margin-bottom:6px}
+.flow .arrow{align-self:center;color:var(--muted);font-size:26px}
+.title-slide{justify-content:center}
+.title-slide h1{font-size:84px;max-width:1250px}
+.title-slide .sub{font-size:30px;color:#d7dbde;max-width:1200px;line-height:1.4;margin-top:8px}
+.orbit-deco{position:absolute;z-index:0;right:-330px;top:-260px;width:820px;height:820px;border-radius:50%;border:2px solid #1d2a2f;
+  box-shadow:0 0 0 70px #0d1316,0 0 0 72px #1a2529,0 0 0 150px #0c1113,0 0 0 152px #172125}
+.orbit-deco::after{content:"";position:absolute;left:245px;top:779px;width:22px;height:22px;border-radius:50%;background:var(--teal);box-shadow:0 0 30px var(--teal)}
+.title-slide>*:not(.orbit-deco):not(.foot){position:relative;z-index:1}
+@media screen{
+  .slide{zoom:var(--z,1)}
+}
+@page{size:1600px 900px;margin:0}
+@media print{
+  html,body{background:var(--bg)}
+  .deck{display:block;padding:0}
+  .slide{zoom:1!important;border:0;border-radius:0;break-after:page;page-break-after:always;margin:0}
+}
+</style>
+</head>
+<body>
+<main class="deck">
+
+<!-- 1 -->
+<section class="slide title-slide">
+  <div class="orbit-deco"></div>
+  <div class="kicker">MISIS GO · КосмоХакатон 2026</div>
+  <h1>Когда выходить в открытый космос: внешние риски по минутам трассы МКС</h1>
+  <p class="sub">Сервис для группы планирования ВКД. Берёт открытые данные сам, считает трассу станции и отвечает:
+    оставить окно, перенести его или честно сказать, что оснований для выбора нет.</p>
+  <div class="foot"><span>Трек «Прогнозирование внешних рисков и планирование ВКД на МКС»</span><span>evarisk</span></div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <div class="kicker">Задача</div>
+  <h2>Аналитику нужен не уровень бури, а ответ про конкретное окно выхода</h2>
+  <div class="cols wide-left">
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <div class="card">
+        <h3>Запрос</h3>
+        <p>Начало и длительность выхода (1–8 ч), период допустимого начала до 24 ч, режим: сейчас, разбор по архиву или прогноз из прошлого.</p>
+      </div>
+      <div class="card">
+        <h3>Ответ</h3>
+        <p>Интервалы по каждому механизму, сравнение всех окон той же длительности, рекомендация с причиной или отказ от выбора. У каждого числа ссылка на сырую запись.</p>
+      </div>
+      <p class="muted" style="font-size:20px">Допуск к ВКД сервис не выдаёт и дозу человека не считает: оцениваемая величина названа в каждом ответе.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <div class="card" style="border-color:#23554b">
+        <h3 class="teal">Механизм 1 · космическая погода</h3>
+        <p>Солнечные протоны. Опасны только на тех минутах витка, где магнитное поле Земли пропускает их к станции.</p>
+      </div>
+      <div class="card" style="border-color:#5b4a2c">
+        <h3 class="yellow">Механизм 2 · метеороиды</h3>
+        <p>Фактор планирования по прогнозу NASA MEO, не оценка риска для экипажа. В мае–июне 2024 до high не доходит; в разобранных сутках окно не меняла.</p>
+      </div>
+      <div class="card">
+        <h3>Сверх обязательного</h3>
+        <p>Сближения как конфликт планирования, прокси дозы среды, геометрия доступа, освещённость, сводка для экипажа.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>docs/MODEL.md</span><span>2</span></div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <div class="kicker">Данные</div>
+  <h2>Расчёт видит только то, что было опубликовано к моменту прогноза</h2>
+  <div class="cols">
+    <div>
+      <ul>
+        <li>NOAA SWPC и архив NCEI: прогнозы на 3 суток, вероятность протонного события, Kp</li>
+        <li>GOES-18 SGPS: 13 каналов протонов, интегральные потоки считаем сами</li>
+        <li>NASA: эфемерида МКС, сообщения DONKI, почасовые данные прогноза метеоров MEO</li>
+        <li>GFZ Kp, CelesTrak GP и SOCRATES</li>
+        <li>Недостающие сутки архива сервис скачивает сам при первом расчёте</li>
+      </ul>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <div class="card">
+        <h3>У каждой записи</h3>
+        <p>Время публикации (точное из продукта или выведенное только в позднюю сторону), версия данных и sha256. Запись без времени публикации в прогноз из прошлого не попадает.</p>
+      </div>
+      <div class="card">
+        <h3>У каждого интервала</h3>
+        <p><span class="pill obs">наблюдение</span><span class="pill ext">внешний прогноз</span><span class="pill calc">наш расчёт</span></p>
+        <p style="margin-top:12px">Нет данных это «нет данных», а не «спокойно».</p>
+      </div>
+      <div class="num-row">
+        <div class="num"><strong class="teal">0</strong><span>ссылок на данные позже отсечения в приёмочной проверке</span></div>
+        <div class="num"><strong>1 мин</strong><span>шаг расчёта по трассе станции</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>docs/SOURCES.md · docs/ACCEPTANCE.md</span><span>3</span></div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <div class="kicker">Главная идея</div>
+  <h2>Поток на геостационаре это обстановка. Опасность для выхода только на открытых витках</h2>
+  <div class="cols wide-right">
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <ul>
+        <li>Магнитная широта в каждой точке трассы (AACGM-v2)</li>
+        <li>Граница доступа протонов 30 MeV по измерениям SAMPEX: 63,4°, в бурю ниже по Kp, 55,2° при Kp 9</li>
+        <li><b>high</b> и <b>critical</b> ставятся только на минутах доступа</li>
+      </ul>
+      <div class="num-row">
+        <div class="num"><strong class="red">74 мин</strong><span>critical в запрошенном окне 04:00–10:00, 11 мая 2024</span></div>
+        <div class="num"><strong class="teal">0 мин</strong><span>в окне 09:30–15:30 при модели по Kp; по формам с Dst 2 и 50 мин против 86 и 144 в запрошенном</span></div>
+      </div>
+      <p class="muted" style="font-size:19px">Витки известны по эфемериде и прогнозу Kp заранее, ещё до первого измерения потока.</p>
+    </div>
+    <div class="shot"><img src="img/map.png" alt="Трасса МКС 11 мая 2024 на карте с уровнями по минутам"></div>
+  </div>
+  <div class="foot"><span>Ogliore et al. 2001 · Leske et al. 2001 · D62, D63</span><span>4</span></div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <div class="kicker">Выбор окна</div>
+  <h2>Все окна той же длительности, правила на виду</h2>
+  <div class="cols wide-right">
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <ul>
+        <li>Кандидаты с шагом 15 минут, часы по каждой линии отдельно; ранжирование взвешенной суммой часов с правилом на виду</li>
+        <li>Окно с critical исключается, линия без данных исключает окно</li>
+        <li>Запрошенное окно остаётся, если оно не хуже лучшего; иначе ближайшее чистое</li>
+        <li>Смена длительности это новый план, а не улучшение</li>
+      </ul>
+      <div class="num-row">
+        <div class="num"><strong>73</strong><span>кандидата за сутки</span></div>
+        <div class="num"><strong class="red">38</strong><span>исключены по critical</span></div>
+        <div class="num"><strong class="teal">09:30</strong><span>ближайшее чистое окно</span></div>
+      </div>
+    </div>
+    <div class="shot"><img src="img/recommendation.png" alt="Рекомендация и таймлайн по линиям"></div>
+  </div>
+  <div class="foot"><span>docs/MODEL.md, раздел «Сравнение окон» · D28, D48, D49</span><span>5</span></div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <div class="kicker">Прогноз из прошлого против простых подходов</div>
+  <h2>11 мая 2024, данные до 10 мая 12:30: какое окно выбрал каждый подход</h2>
+  <table class="t">
+    <thead><tr><th>подход</th><th>что предсказал</th><th>выбранное окно</th><th>экспозиция по реконструкции в окне</th><th>заблаговременность</th></tr></thead>
+    <tbody>
+      <tr class="ours"><td><b>наш расчёт</b></td><td>high на 111 минутах доступа по трассе</td><td>09:30–15:30</td><td class="n teal">0 мин</td><td class="n">828 мин</td></tr>
+      <tr><td>персистентность</td><td>последнее доступное измерение (3 мая, давность 6,5 сут): ниже S1</td><td>04:00–10:00</td><td class="n red">74 мин</td><td class="muted">нет</td></tr>
+      <tr><td>единственное предупреждение</td><td>3-day forecast: «below S-scale»</td><td>04:00–10:00</td><td class="n red">74 мин</td><td class="muted">нет</td></tr>
+      <tr><td>прогноз SWPC без орбиты</td><td>вероятность S1+ 55 % на сутки</td><td>04:00–10:00</td><td class="n red">74 мин</td><td class="n">828 мин</td></tr>
+    </tbody>
+  </table>
+  <div class="cols" style="margin-top:18px;grid-template-columns:1fr 1fr 1fr;gap:22px;flex:0">
+    <div class="num" style="padding:16px 22px"><strong class="teal">93 / 14 / 18</strong><span>попадания / пропуски / ложные, мин экспозиции; правила окна настроены на этих же сутках</span></div>
+    <div class="num" style="padding:16px 22px"><strong>0</strong><span>попаданий у бейзлайнов по построению: двое не выдают high, персистентность видит отсчёт 6,5 сут давности</span></div>
+    <div class="num" style="padding:16px 22px"><strong class="yellow">то же 55 %</strong><span>прогноз SWPC предупреждает рано, но одно число на сутки не выбирает окно</span></div>
+  </div>
+  <div class="foot"><span>Реконструкция это та же модель по поздним данным, не независимое измерение · персистентность: свежий клон находит тот же отсчёт (D80) · D41, D66</span><span>6</span></div>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <div class="kicker">Проверка</div>
+  <h2>Событие, промах и контроль, плюс периоды вне тестового</h2>
+  <div class="cols">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="card"><h3 class="teal">11 мая 2024 · событие</h3><p>Предупреждение за 13 ч 48 мин; перенос совпал с окном по реконструкции. Правила окна настраивались на этих сутках: это не независимая проверка.</p></div>
+      <div class="card"><h3 class="red">8 июня 2024 · промах всех подходов</h3><p>Вспышка после момента прогноза, SWPC давал 10 %. Сервис первой фразой пишет, что поток не измерен.</p></div>
+      <div class="card"><h3>13 июня 2024 · контроль</h3><p>Ни одной ложной тревоги по протонам. Порог high метеоров поднят до 5,0 после этих суток (было 893 мин high).</p></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="num"><strong>183 / 63 / 24</strong><span>Из 8 прогнозов за сутки (6 эпизодов) без строк событий, по которым выбраны сроки удержания. Все 183 мин попаданий это 11 мая 2024, дата настройки правил. По всем строкам 381 / 74 / 135</span></div>
+      <div class="num"><strong>10 из 75</strong><span>изменённых значений параметров меняют окно; при пороге 60 % прогноз не предупреждает и оставляет окно с 74 мин экспозиции по реконструкции</span></div>
+      <div class="num"><strong class="teal">10 из 10</strong><span>приёмочных сценариев: утечка будущего, отказ источника, граничные даты, воспроизводимость, честный пропуск 8 июня</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>docs/RESULTS.md · INDEPENDENT_PERIODS.md · SENSITIVITY.md · ACCEPTANCE.md</span><span>7</span></div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <div class="kicker">Сравнение на странице</div>
+  <h2>Проверка после события рядом с рекомендацией, но отдельно от расчёта</h2>
+  <div class="shot contain" style="flex:1;min-height:0"><img src="img/baselines.png" alt="Таблица «Сравнение с простыми подходами» на странице"></div>
+  <div class="foot"><span>Поздние данные участвуют только в проверке, не в расчёте</span><span>8</span></div>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <div class="kicker">Границы и дополнительные функции</div>
+  <h2>Что ответ говорит и чего не говорит</h2>
+  <div class="cols">
+    <div class="card">
+      <h3 class="red">Не делаем</h3>
+      <ul>
+        <li>Дозу человека, пробой скафандра, допуск к ВКД</li>
+        <li>Единый индекс риска: уровень каждой линии отдельно, critical или нет данных по любой линии исключают окно</li>
+        <li>Смешение шкал G, S и R; Kp только сдвигает границу доступа</li>
+        <li>Проверку за независимую: правила окна настроены на 11 мая 2024, порог метеоров на 13 июня, факт считает та же модель</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 class="teal">Сверх обязательного</h3>
+      <ul>
+        <li>Сводка для экипажа: модель формулирует, каждое число сверено с расчётом</li>
+        <li>Прокси дозы среды по спектру GOES и ICRP 116, с подписью «не доза человека»</li>
+        <li>Геометрия доступа при Kp 9: какие окна закрыты даже в худшую бурю</li>
+        <li>Сближения SOCRATES как конфликт планирования</li>
+        <li>Докачка архива под другие даты по первому запросу</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>docs/SCIENTIFIC_BASIS.md · docs/DECISIONS.md</span><span>9</span></div>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <div class="kicker">Демо</div>
+  <h2>Один путь аналитика</h2>
+  <div class="flow">
+    <div class="step"><b>Запрос</b>окно, режим, отсечение</div><div class="arrow">→</div>
+    <div class="step"><b>Задание</b>ход расчёта, докачка архива</div><div class="arrow">→</div>
+    <div class="step"><b>Рекомендация</b>причина и таймлайн</div><div class="arrow">→</div>
+    <div class="step"><b>Предупреждение</b>правило, значения, сырая запись</div><div class="arrow">→</div>
+    <div class="step"><b>Окна</b>сравнение, смена длительности</div><div class="arrow">→</div>
+    <div class="step"><b>Проверка</b>факт и бейзлайны</div><div class="arrow">→</div>
+    <div class="step"><b>Выгрузка</b>zip: JSON, отчёт, CSV</div>
+  </div>
+  <div class="cols" style="margin-top:28px">
+    <div class="shot"><img src="img/windows-crop.png" alt="Сравнение окон одинаковой длительности"></div>
+    <div class="shot"><img src="img/sources-crop.png" alt="Мониторинг источников"></div>
+  </div>
+  <div class="foot"><span>Отключённый источник даёт «нет данных», а не «благоприятно»</span><span>10</span></div>
+</section>
+
+<!-- 11 -->
+<section class="slide title-slide">
+  <div class="orbit-deco"></div>
+  <div class="kicker">Итог</div>
+  <h1>Выбор окна внутри суток, а не только «буря есть или нет»</h1>
+  <p class="sub">Два механизма, три режима, прогноз из прошлого с честным отсечением и сравнением с простыми подходами прямо в сервисе.
+    Каждое число ведёт к сырой записи.</p>
+  <p class="sub muted" style="font-size:22px;margin-top:28px">Код и инструкция запуска: gitverse.ru/hackrus.experts/kosmo-piter_misis_go_15</p>
+  <div class="foot"><span>MISIS GO</span><span>11</span></div>
+</section>
+
+</main>
+<script>
+// Экранный просмотр: слайд 1600×900 масштабируется по ширине окна; печать идёт в исходном размере.
+(function () {
+  function fit() {
+    var z = Math.min(1, (window.innerWidth - 32) / 1600);
+    document.documentElement.style.setProperty('--z', String(z));
+  }
+  window.addEventListener('resize', fit);
+  fit();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+# Переопределение для VPS: перезапуск после сбоев и перезагрузки хоста, ограничение размера логов.
+# Исходники в контейнеры не монтируются: код берётся из образа.
+# Запуск: docker compose --env-file .env -f deploy/compose.yml -f deploy/compose.prod.yml up -d --build
+x-prod: &prod
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  db:
+    <<: *prod
+  # HTTPS наружу через прокси хоста (deploy/egress_proxy.py, служба evarisk-egress): с командного сервера DONKI
+  # отвечает только по IPv6, а контейнеры ходят наружу по IPv4 (docs/DEPLOY.md, «Сеть сервера»).
+  api:
+    <<: *prod
+    environment:
+      HTTPS_PROXY: http://172.17.0.1:3128
+      NO_PROXY: db,api,caddy,tts,localhost,127.0.0.1
+  worker:
+    <<: *prod
+    environment:
+      HTTPS_PROXY: http://172.17.0.1:3128
+      NO_PROXY: db,api,caddy,tts,localhost,127.0.0.1
+  caddy:
+    <<: *prod

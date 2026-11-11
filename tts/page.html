@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Синтез речи · evarisk</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; background: #0b0d0f; color: #f1f3f4; font: 15px/1.5 Inter, -apple-system, 'Segoe UI', sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 48px; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  p.muted { color: #9299a2; margin: 0 0 20px; }
+  textarea { width: 100%; box-sizing: border-box; min-height: 170px; padding: 12px; border-radius: 8px; border: 1px solid #292d30;
+             background: #151719; color: inherit; font: inherit; resize: vertical; }
+  .row { display: flex; gap: 12px; align-items: center; margin: 14px 0; flex-wrap: wrap; }
+  select, button { font: inherit; padding: 9px 14px; border-radius: 8px; border: 1px solid #292d30; background: #151719; color: inherit; }
+  button.primary { background: #2f7f6f; border-color: #2f7f6f; cursor: pointer; }
+  button:disabled { opacity: .5; cursor: default; }
+  audio { width: 100%; margin-top: 8px; }
+  .note { padding: 10px 12px; border-radius: 8px; margin-top: 12px; font-size: 13px; }
+  .error { border: 1px solid #e8747066; background: #e8747014; color: #f0b1ae; }
+  .ok { border: 1px solid #5bd3bb55; background: #5bd3bb12; color: #a9e6d8; }
+  code { background: #1c2024; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Синтез речи</h1>
+  <p class="muted">Локальный сервис для сводки экипажу. Текст пишется словами: модель не произносит цифры и латиницу
+  и пропускает их молча, поэтому такой текст сервис отклоняет.</p>
+  <textarea id="text">Выход в четыре ноль-ноль не рекомендую. С четырёх тридцати девяти до семи пятидесяти двух три витка открыты для протонов. Чистое окно с восьми ноль-ноль до четырнадцати ноль-ноль по всемирному времени. Решение за руководителем работ.</textarea>
+  <div class="row">
+    <label>Диктор <select id="speaker"></select></label>
+    <label>Темп <select id="rate"></select></label>
+    <button id="go" class="primary" type="button">Озвучить</button>
+    <span id="meta" class="muted"></span>
+  </div>
+  <audio id="player" controls hidden></audio>
+  <div id="message"></div>
+  <p class="muted" style="margin-top:28px">API: <code>POST /synthesize</code> с JSON <code>{"text", "language": "ru", "speaker"}</code>
+  возвращает <code>audio/wav</code>; состояние сервиса в <code>GET /health</code>.</p>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+function show(kind, text) { $('message').innerHTML = ''; if (!text) return; const d = document.createElement('div'); d.className = `note ${kind}`; d.textContent = text; $('message').append(d); }
+async function init() {
+  const health = await (await fetch('health')).json();
+  for (const name of health.speakers) { const o = document.createElement('option'); o.value = o.textContent = name; if (name === health.default_speaker) o.selected = true; $('speaker').append(o); }
+  const rateNames = { slow: 'медленно', medium: 'обычный', fast: 'быстрее', 'x-fast': 'быстро' };
+  for (const name of health.rates) { const o = document.createElement('option'); o.value = name; o.textContent = rateNames[name] || name; if (name === health.default_rate) o.selected = true; $('rate').append(o); }
+  $('meta').textContent = `${health.engine}, ${health.sample_rate / 1000} кГц`;
+}
+$('go').addEventListener('click', async () => {
+  $('go').disabled = true; show('', ''); const started = performance.now();
+  try {
+    const response = await fetch('synthesize', { method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ text: $('text').value, language: 'ru', speaker: $('speaker').value, rate: $('rate').value }) });
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      const detail = body?.error?.message || (Array.isArray(body?.detail) ? body.detail.map((d) => d.msg).join('; ') : `HTTP ${response.status}`);
+      show('error', detail); $('player').hidden = true; return;
+    }
+    const blob = await response.blob();
+    $('player').src = URL.createObjectURL(blob); $('player').hidden = false; await $('player').play().catch(() => {});
+    show('ok', `Готово за ${((performance.now() - started) / 1000).toFixed(2)} с, ${(blob.size / 1024).toFixed(0)} КБ`);
+  } catch (e) { show('error', `сервис недоступен: ${e}`); }
+  finally { $('go').disabled = false; }
+});
+init().catch((e) => show('error', `сервис недоступен: ${e}`));
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+# HTTPS-прокси для контейнеров evarisk (deploy/egress_proxy.py): DONKI по IPv6 с хоста. Установка в docs/DEPLOY.md.
+[Unit]
+Description=evarisk egress HTTPS proxy for containers
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/evarisk-egress/egress_proxy.py
+Restart=always
+RestartSec=3
+DynamicUser=yes
+
+[Install]
+WantedBy=multi-user.target

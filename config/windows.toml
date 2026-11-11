@@ -1,0 +1,6 @@
+# Правила сравнения окон одинаковой длительности. Веса это наше правило, не физическая величина.
+step_minutes = 15
+weight_high = 1.0
+weight_elevated = 0.25
+equivalence_tolerance_hours = 0.25
+critical_excludes = true

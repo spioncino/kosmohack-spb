@@ -1,0 +1,24 @@
+# Прокси дозы среды за номинальной защитой скафандра (D34, D40). Мощность дозы в точке траектории на минуте доступа:
+# 4π · ∫ φ(E)·h_ISO(E) dE от max(порог защиты, порог обрезания в точке) до последней эффективной энергии каналов GOES SGPS,
+# спектр кусочно-степенной между эффективными энергиями (D35), коэффициенты ICRP 116 интерполируются в log-log.
+# Не доза человека: без модели тела, ориентации, экранирования Землёй и станцией.
+# Минимальная защита мягких частей EMU: измеренная ткань 0.128 г/см² ≈ 0.181 г/см² Al-эквивалента
+# (Wilson et al., NTRS 20060046504, с. 13); то же значение в config/sep_line.toml как фундамент D34.
+suit_shielding_g_cm2 = 0.18
+# Коэффициенты флюенс → эффективная доза, протоны, изотропное поле ISO; файл OpenMC скопирован без изменений
+# (заголовок и все шесть геометрий), парсер берёт колонки Energy и ISO.
+icrp116_file = "config/icrp116_protons_iso.txt"
+icrp116_geometry = "ISO"
+# Пробег протонов в алюминии для порога защиты: таблица NIST PSTAR, материал 013 Aluminum, колонка CSDA
+# (проекционный пробег отличается менее чем на 1 % при 10 MeV: 0.1697 против 0.1705 г/см²).
+pstar_file = "config/pstar_aluminum.csv"
+range_column = "csda"
+
+[sources]
+shielding = "Wilson J.W. et al. Spacesuit Radiation Shield Design Methods, NTRS 20060046504, с. 13: ткань EMU 0.128 г/см² ≈ 0.181 г/см² Al-экв."
+icrp116 = "ICRP Publication 116 (2010), Ann. ICRP 40(2–5), Annex A, протоны; данные из OpenMC openmc/data/dose/icrp116/protons.txt, https://raw.githubusercontent.com/openmc-dev/openmc/develop/openmc/data/dose/icrp116/protons.txt; контроль ISO: 10 MeV 45.8, 50 MeV 451, 100 MeV 1130, 500 MeV 1180 pSv·cm²"
+icrp116_license = "OpenMC, лицензия MIT, Copyright (c) 2011-2026 Massachusetts Institute of Technology, UChicago Argonne LLC, and OpenMC contributors; https://raw.githubusercontent.com/openmc-dev/openmc/develop/LICENSE"
+pstar = "NIST PSTAR (Berger M.J., Coursey J.S., Zucker M.A., Chang J., NIST Standard Reference Database 124), https://physics.nist.gov/PhysRefData/Star/Text/PSTAR.html, материал 013 Aluminum, таблица получена через форму базы 2026-09-18; контроль: CSDA 10 MeV 0.1705 г/см²"
+spectrum = "GOES-R SGPS L2 avg5m, дифференциальный поток protons/(cm² sr MeV s), среднее по двум датчикам, эффективные энергии каналов как среднее геометрическое границ (store.views.proton_series, D35)"
+access = "модель доступа линии SEP: |mlat| >= Λc(R(30 MeV), Kp) по config/sep_line.toml (D36); порог обрезания в точке по той же формуле, обращённой к энергии"
+formula = "D40: E = 4π · Σ_минут доступа Δt · ∫ φ(E)·h_ISO(E) dE; pSv/s → мкЗв/ч через 3600·1e-6"

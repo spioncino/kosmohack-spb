@@ -1,0 +1,9 @@
+[
+ {
+  "messageType": "GST",
+  "messageID": "20241008-AL-004",
+  "messageURL": "https://kauai.ccmc.gsfc.nasa.gov/DONKI/view/Alert/33842/1",
+  "messageIssueTime": "2024-10-08T12:19Z",
+  "messageBody": "## Community Coordinated Modeling Center Database Of Notifications, Knowledge, Information ( CCMC DONKI )\n## Message Type: Space Weather Notification - Geomagnetic Storm\n##\n## Message Issue Date: 2024-10-08T12:19:44Z\n## Message ID: 20241008-AL-004\n##\n## Disclaimer: NOAA's Space Weather Prediction Center is the United States Government official source for space weather forecasts. This \"Experimental Research Information\" consists of preliminary NASA research products and should be interpreted and used accordingly.\n\n\n## Summary:\n\nIntensifying space weather storm in the Earth's magnetosphere. Geomagnetic Kp index had reached level 6.67 (strong) during the synoptic period 2024-10-08T00:00Z to 2024-10-08T03:00Z.\n\nThe storm may be caused by the Interplanetary Shock with ID 2024-10-06T06:55:00-IPS-001 (see notification 20241006-AL-001) associated with the arrival of CME with ID 2024-10-03T12:48:00-CME-001 (see notification 20241003-AL-004), and/or the Interplanetary Shock with ID 2024-10-07T22:12:00-IPS-001 (see notification 20241007-AL-006) associated with the arrival of CME with ID 2024-10-03T20:36:00-CME-001 (see notifications 20241004-AL-001 and 20241004-AL-002) and/or 2024-10-04T04:13:00-CME-001 (see notification 20241004-AL-002).\n\nNASA spacecraft at GEO, MEO, polar and other orbits passing through or in the vicinity of the Earth's ring current and auroral regions can be impacted.\n\nActivity ID: 2024-10-07T12:00:00-GST-001.\n\n## Notes: \n\n\n\n\n"
+ }
+]
